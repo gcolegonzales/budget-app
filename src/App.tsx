@@ -143,7 +143,7 @@ function DashboardRoute() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/budget-app">
       <ToastProvider>
         <div className="min-h-screen min-h-dvh bg-gradient-to-b from-slate-100 to-slate-50 text-slate-900 flex flex-col md:justify-center md:items-center safe-area-padding">
           <main className="w-full max-w-[90rem] mx-auto flex-1 pb-safe px-4 pt-4 pb-6 sm:px-8 sm:pt-5 sm:pb-8 md:px-12 md:pt-6 md:pb-10 lg:px-[90px] lg:pt-8 lg:pb-[90px] mb-8 sm:mb-12 lg:mb-[90px]">
