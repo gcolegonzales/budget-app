@@ -20,10 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@4
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@4
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
@@ -45,7 +45,7 @@ jobs:
           echo "If you see ./assets/ above, the build is correct. If you see /src/main.tsx, the build is wrong."
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@3
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
@@ -58,4 +58,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deploy
-        uses: actions/deploy-pages@4
+        uses: actions/deploy-pages@v4
