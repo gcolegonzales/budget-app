@@ -38,6 +38,12 @@ jobs:
       - name: Copy index to 404
         run: cp dist/index.html dist/404.html
 
+      - name: Verify build output
+        run: |
+          echo "Built index.html script tag:"
+          grep -o '<script[^>]*src="[^"]*"[^>]*>' dist/index.html || true
+          echo "If you see ./assets/ above, the build is correct. If you see /src/main.tsx, the build is wrong."
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@3
         with:
