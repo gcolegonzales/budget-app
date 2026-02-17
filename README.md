@@ -1,6 +1,6 @@
 # BudgetBoi
 
-A personal budget app: track balance, payroll, expenses, and income by month. Create multiple budgets, import/export JSON, and navigate by calendar with a configurable start date.
+A personal budget app: track balance, payroll, expenses, and income by month. Create multiple budgets, import/export JSON, and navigate by calendar with a configurable start date. See how much money you should have on any given day.
 
 ## Tech
 
