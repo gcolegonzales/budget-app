@@ -42,8 +42,8 @@ export function saveSettings(settings: Settings): void {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings))
 }
 
-/** Default budget start when none set (e.g. legacy data). */
-const DEFAULT_BUDGET_START = '2025-02-16'
+/** Default budget start when none set (e.g. legacy data). Uses today at module load. */
+const DEFAULT_BUDGET_START = format(new Date(), 'yyyy-MM-dd')
 
 /** Earliest date the user can navigate to for this budget. */
 export function getBudgetStartDate(): Date {

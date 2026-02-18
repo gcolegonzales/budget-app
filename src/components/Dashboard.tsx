@@ -220,7 +220,7 @@ function EditBudgetModal({
   const [initialBalance, setInitialBalance] = useState(
     settings?.initialBalance != null ? String(settings.initialBalance) : ""
   );
-  const [startDate, setStartDate] = useState(settings?.startDate ?? "2025-02-16");
+  const [startDate, setStartDate] = useState(settings?.startDate ?? format(new Date(), "yyyy-MM-dd"));
   const [firstDate, setFirstDate] = useState(settings?.payroll?.firstDate ?? minPayDate);
   const [frequency, setFrequency] = useState<"monthly" | "every2weeks">(
     settings?.payroll?.frequency ?? "every2weeks"

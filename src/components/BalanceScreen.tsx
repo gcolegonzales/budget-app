@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { format } from 'date-fns'
 import { motion } from 'framer-motion'
 import CurrencyInput from 'react-currency-input-field'
 import { getSettings, saveSettings } from '../lib/state'
@@ -8,7 +9,7 @@ interface BalanceScreenProps {
   onDone: () => void
 }
 
-const DEFAULT_START_DATE = '2025-02-16'
+const DEFAULT_START_DATE = format(new Date(), 'yyyy-MM-dd')
 
 export default function BalanceScreen({ onDone }: BalanceScreenProps) {
   const [value, setValue] = useState('')
