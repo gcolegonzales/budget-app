@@ -478,38 +478,40 @@ export default function Dashboard({
             {saved.map((b) => (
               <li
                 key={b.id}
-                className="flex items-center justify-between gap-3 py-3 px-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50"
+                className="flex flex-col gap-2 py-3 px-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between sm:gap-3"
               >
-                <div className="min-w-0 flex-1">
-                  <p className="font-medium text-slate-800 truncate">{b.name}</p>
+                <p className="font-medium text-slate-800 truncate min-w-0 order-1">
+                  {b.name}
+                </p>
+                <div className="flex flex-wrap items-center justify-between gap-2 min-w-0 order-2 sm:flex-nowrap sm:flex-shrink-0 sm:justify-end">
                   <p className="text-xs text-slate-500">
                     {format(new Date(b.savedAt), "MMM d, yyyy HH:mm")}
                   </p>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => handleOpen(b.id)}
-                    className="btn-interactive px-3 py-1.5 text-sm font-medium rounded-xl bg-sky-400 text-white hover:bg-sky-500"
-                  >
-                    Open
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleEdit(b.id)}
-                    className="btn-interactive px-3 py-1.5 text-sm font-medium rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50"
-                    aria-label={`Edit ${b.name}`}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteClick(b.id, b.name)}
-                    className="btn-interactive px-3 py-1.5 text-sm font-medium rounded-xl border border-slate-200 text-red-600 hover:bg-red-50"
-                    aria-label={`Delete ${b.name}`}
-                  >
-                    Delete
-                  </button>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleOpen(b.id)}
+                      className="btn-interactive px-3 py-1.5 text-sm font-medium rounded-xl bg-sky-400 text-white hover:bg-sky-500"
+                    >
+                      Open
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleEdit(b.id)}
+                      className="btn-interactive px-3 py-1.5 text-sm font-medium rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50"
+                      aria-label={`Edit ${b.name}`}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteClick(b.id, b.name)}
+                      className="btn-interactive px-3 py-1.5 text-sm font-medium rounded-xl border border-slate-200 text-red-600 hover:bg-red-50"
+                      aria-label={`Delete ${b.name}`}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </li>
             ))}
