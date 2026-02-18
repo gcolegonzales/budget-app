@@ -469,6 +469,8 @@ export default function CalendarView({
   } | null>(null);
   const [exportPopoverOpen, setExportPopoverOpen] = useState(false);
   const exportPopoverRef = useRef<HTMLDivElement>(null);
+  const [actionsPopoverOpen, setActionsPopoverOpen] = useState(false);
+  const actionsPopoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!exportPopoverOpen) return;
@@ -483,6 +485,20 @@ export default function CalendarView({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [exportPopoverOpen]);
+
+  useEffect(() => {
+    if (!actionsPopoverOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        actionsPopoverRef.current &&
+        !actionsPopoverRef.current.contains(e.target as Node)
+      ) {
+        setActionsPopoverOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [actionsPopoverOpen]);
 
   const minViewMonth = minDate;
   const onActiveStartDateChange = useCallback(
@@ -626,118 +642,228 @@ export default function CalendarView({
   }, [pendingDeleteBudget, handleDeleteSavedBudget]);
 
   return (
-    <div className="w-full space-y-3 sm:space-y-4 lg:space-y-5">
-      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-2 sm:gap-3">
-        <div className="flex items-center gap-2 order-1">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden space-y-3 sm:space-y-4 lg:space-y-5">
+      <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-3">
+        {/* Narrow: single row — Back left, BudgetBoi+chevron popover centered (until md) */}
+        <div className="flex md:hidden w-full items-center">
+          <div className="flex-1 flex items-center min-w-0">
+            {onGoToDashboard && (
+              <button
+                type="button"
+                onClick={onGoToDashboard}
+                className="btn-interactive text-xs font-medium text-slate-600 hover:text-slate-800 inline-flex items-center gap-1 py-1.5 px-2 rounded-xl border border-slate-200 hover:bg-slate-50 shrink-0"
+                aria-label="Back to dashboard"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+                Back
+              </button>
+            )}
+          </div>
+          <div className="relative shrink-0" ref={actionsPopoverRef}>
+          <button
+            type="button"
+            onClick={() => setActionsPopoverOpen((o) => !o)}
+            className="btn-interactive inline-flex items-center gap-1.5 rounded-xl bg-slate-100/90 text-slate-700 px-3 py-2 hover:bg-slate-200/90 border border-slate-200/60"
+            aria-expanded={actionsPopoverOpen}
+            aria-haspopup="true"
+            aria-label="Actions"
+          >
+            <BudgetBoiBranding variant="compact" className="[&>svg]:h-6" />
+            <motion.svg
+              className="h-5 w-5 shrink-0 text-slate-500"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              animate={{ rotate: actionsPopoverOpen ? 180 : 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 18,
+              }}
+            >
+              <path d="m6 9 6 6 6-6" />
+            </motion.svg>
+          </button>
+          {actionsPopoverOpen && (
+            <div className="absolute left-1/2 -translate-x-1/2 top-full z-20 mt-1 min-w-[12rem] rounded-xl border border-slate-200 bg-white py-1.5 shadow-lg">
+              {onNewBudget && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onNewBudget();
+                    setActionsPopoverOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-violet-50 hover:text-violet-800"
+                >
+                  New Budget
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  handleOpenSaveModal();
+                  setActionsPopoverOpen(false);
+                }}
+                className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-sky-50 hover:text-sky-800"
+              >
+                Save budget
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleOpenLoadModal();
+                  setActionsPopoverOpen(false);
+                }}
+                className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-800"
+              >
+                Load budget
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleExportMonth();
+                  setActionsPopoverOpen(false);
+                }}
+                className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-violet-50 hover:text-violet-800"
+              >
+                Export This Month
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleExportYear();
+                  setActionsPopoverOpen(false);
+                }}
+                className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-violet-50 hover:text-violet-800"
+              >
+                Export This Year
+              </button>
+              {onStartOver && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onStartOver();
+                    setActionsPopoverOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-800 underline underline-offset-2"
+                >
+                  Start Over
+                </button>
+              )}
+            </div>
+          )}
+          </div>
+          <div className="flex-1 min-w-0" aria-hidden />
+        </div>
+        {/* md and up: Back (left) */}
+        <div className="hidden md:flex items-center gap-2 shrink-0">
           {onGoToDashboard && (
             <button
               type="button"
               onClick={onGoToDashboard}
-              className="btn-interactive text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-800 inline-flex items-center gap-1 sm:gap-1.5 py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl border border-slate-200 hover:bg-slate-50"
+              className="btn-interactive text-sm font-medium text-slate-600 hover:text-slate-800 inline-flex items-center gap-1.5 py-2 px-3 rounded-xl border border-slate-200 hover:bg-slate-50"
               aria-label="Back to dashboard"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="sm:w-[18px] sm:h-[18px]"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m15 18-6-6 6-6" />
               </svg>
               Back
             </button>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 order-2">
+        {/* md and up: BudgetBoi + inline action buttons */}
+        <div className="hidden md:flex flex-col gap-2 min-w-0 md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-2">
           <BudgetBoiBranding
             variant="compact"
-            className="mr-0.5 sm:mr-1 [&>svg]:h-6 sm:[&>svg]:h-[32px]"
+            className="shrink-0 [&>svg]:h-[32px]"
           />
-          {onNewBudget && (
-            <button
-              type="button"
-              onClick={onNewBudget}
-              className="btn-interactive text-xs sm:text-sm font-medium py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl bg-violet-500 text-white hover:bg-violet-600"
-            >
-              New Budget
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={handleOpenSaveModal}
-            className="btn-interactive text-xs sm:text-sm font-medium py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl bg-sky-400 text-white hover:bg-sky-500"
-          >
-            Save budget
-          </button>
-          <button
-            type="button"
-            onClick={handleOpenLoadModal}
-            className="btn-interactive text-xs sm:text-sm font-medium py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl bg-emerald-400 text-white hover:bg-emerald-500"
-          >
-            Load budget
-          </button>
-          <div className="relative" ref={exportPopoverRef}>
-            <button
-              type="button"
-              onClick={() => setExportPopoverOpen((o) => !o)}
-              className="btn-interactive text-xs sm:text-sm font-medium py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl bg-violet-400 text-white hover:bg-violet-500 inline-flex items-center gap-1 sm:gap-1.5"
-              aria-expanded={exportPopoverOpen}
-              aria-haspopup="true"
-            >
-              Export
-              <svg
-                className={`w-4 h-4 transition-transform ${exportPopoverOpen ? "rotate-180" : ""}`}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+          <div className="flex flex-wrap items-center gap-2">
+            {onNewBudget && (
+              <button
+                type="button"
+                onClick={onNewBudget}
+                className="btn-interactive text-sm font-medium py-2 px-3 rounded-xl bg-violet-500 text-white hover:bg-violet-600"
               >
-                <path d="m6 9 6 6 6-6" />
-              </svg>
+                New Budget
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleOpenSaveModal}
+              className="btn-interactive text-sm font-medium py-2 px-3 rounded-xl bg-sky-400 text-white hover:bg-sky-500"
+            >
+              Save budget
             </button>
-            {exportPopoverOpen && (
-              <div className="absolute right-0 top-full z-20 mt-1 min-w-[10rem] rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleExportMonth();
-                    setExportPopoverOpen(false);
-                  }}
-                  className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-800 rounded-xl"
+            <button
+              type="button"
+              onClick={handleOpenLoadModal}
+              className="btn-interactive text-sm font-medium py-2 px-3 rounded-xl bg-emerald-400 text-white hover:bg-emerald-500"
+            >
+              Load budget
+            </button>
+            <div className="relative" ref={exportPopoverRef}>
+              <button
+                type="button"
+                onClick={() => setExportPopoverOpen((o) => !o)}
+                className="btn-interactive text-sm font-medium py-2 px-3 rounded-xl bg-violet-400 text-white hover:bg-violet-500 inline-flex items-center gap-1.5"
+                aria-expanded={exportPopoverOpen}
+                aria-haspopup="true"
+              >
+                Export
+                <svg
+                  className={`w-4 h-4 shrink-0 transition-transform ${exportPopoverOpen ? "rotate-180" : ""}`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  Export This Month
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleExportYear();
-                    setExportPopoverOpen(false);
-                  }}
-                  className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-800 rounded-xl"
-                >
-                  Export This Year
-                </button>
-              </div>
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+              {exportPopoverOpen && (
+                <div className="absolute right-0 top-full z-20 mt-1 min-w-[10rem] rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleExportMonth();
+                      setExportPopoverOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-800 rounded-xl"
+                  >
+                    Export This Month
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleExportYear();
+                      setExportPopoverOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-800 rounded-xl"
+                  >
+                    Export This Year
+                  </button>
+                </div>
+              )}
+            </div>
+            {onStartOver && (
+              <button
+                type="button"
+                onClick={onStartOver}
+                className="btn-interactive text-sm text-slate-500 hover:text-slate-700 font-medium underline underline-offset-2 py-2 px-3 rounded-xl"
+              >
+                Start Over
+              </button>
             )}
           </div>
-          {onStartOver && (
-            <button
-              type="button"
-              onClick={onStartOver}
-              className="btn-interactive text-xs sm:text-sm text-slate-500 hover:text-slate-700 font-medium underline underline-offset-2 transition-colors py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl"
-            >
-              Start Over
-            </button>
-          )}
         </div>
       </div>
       {saveLoadError && (
@@ -803,12 +929,12 @@ export default function CalendarView({
           defaultName={`Budget ${format(new Date(), "yyyy-MM-dd")}`}
         />
       )}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 items-stretch">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 items-stretch min-w-0 grid-auto-rows-[minmax(5.5rem,auto)]">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="min-h-0 flex"
+          className="min-h-[5.5rem] flex"
         >
           <StatCard
             label="Income this month"
@@ -822,7 +948,7 @@ export default function CalendarView({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.06 }}
-          className="min-h-0 flex"
+          className="min-h-[5.5rem] flex"
         >
           <StatCard
             label="Spent this month"
@@ -836,7 +962,7 @@ export default function CalendarView({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.07 }}
-          className="min-h-0 flex"
+          className="min-h-[5.5rem] flex"
         >
           <StatCard
             label="Net this month"
@@ -856,7 +982,7 @@ export default function CalendarView({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="min-h-0 flex"
+          className="min-h-[5.5rem] flex"
         >
           <StatCard
             label="Lowest balance this month"
@@ -872,7 +998,7 @@ export default function CalendarView({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.09 }}
-          className="min-h-0 flex"
+          className="min-h-[5.5rem] flex"
         >
           <StatCard
             label="Income per month (budgeted)"
@@ -886,7 +1012,7 @@ export default function CalendarView({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="min-h-0 flex"
+          className="min-h-[5.5rem] flex"
         >
           <StatCard
             label="Expected savings this month"
@@ -900,7 +1026,7 @@ export default function CalendarView({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.11 }}
-          className="min-h-0 flex"
+          className="min-h-[5.5rem] flex"
         >
           <StatCard
             label="Average net per month"
@@ -920,7 +1046,7 @@ export default function CalendarView({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
-          className="min-h-0 flex"
+          className="min-h-[5.5rem] flex"
         >
           <StatCard
             label="Savings rate this month"
@@ -962,7 +1088,7 @@ export default function CalendarView({
         </div>
         {viewMode === "month" ? (
           <ModularCalendarCard
-            className="rounded-xl sm:rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/80 p-4 sm:p-6 md:p-8 lg:p-10 shadow-xl shadow-slate-200/50 calendar-card relative"
+            className="rounded-xl sm:rounded-2xl bg-white/90 backdrop-blur-sm p-4 sm:p-6 md:p-8 lg:p-10 shadow-xl shadow-slate-200/50 calendar-card relative sticky top-0 z-10"
             header={
               <ArrowNavigation
                 onPrev={() => setViewDate((d) => startOfMonth(subMonths(d, 1)))}
@@ -980,28 +1106,32 @@ export default function CalendarView({
               </ArrowNavigation>
             }
             body={
-              <Calendar
-                key={selectedDate === null ? "no-selection" : "has-selection"}
-                calendarType="gregory"
-                value={selectedDate ?? undefined}
-                onActiveStartDateChange={onActiveStartDateChange}
-                activeStartDate={viewDate}
-                minDate={minDate}
-                maxDetail="month"
-                minDetail="month"
-                showNeighboringMonth={true}
-                next2Label={null}
-                prev2Label={null}
-                onClickDay={(date) => setSelectedDate(date)}
-                tileContent={tileContent}
-                navigationLabel={({ date }) => format(date, "MMMM yyyy")}
-                className="react-calendar-custom w-full"
-              />
+              <div className="w-full min-w-0 overflow-x-auto">
+                <div className="min-w-max">
+                  <Calendar
+                      key={selectedDate === null ? "no-selection" : "has-selection"}
+                      calendarType="gregory"
+                      value={selectedDate ?? undefined}
+                      onActiveStartDateChange={onActiveStartDateChange}
+                      activeStartDate={viewDate}
+                      minDate={minDate}
+                      maxDetail="month"
+                      minDetail="month"
+                      showNeighboringMonth={true}
+                      next2Label={null}
+                      prev2Label={null}
+                      onClickDay={(date) => setSelectedDate(date)}
+                      tileContent={tileContent}
+                      navigationLabel={({ date }) => format(date, "MMMM yyyy")}
+                      className="react-calendar-custom w-full"
+                  />
+                </div>
+              </div>
             }
           />
         ) : viewMode === "month-picker" ? (
           <ModularCalendarCard
-            className="rounded-xl sm:rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/80 p-4 sm:p-6 md:p-8 lg:p-10 shadow-xl shadow-slate-200/50 calendar-card relative"
+            className="rounded-xl sm:rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/80 p-4 sm:p-6 md:p-8 lg:p-10 shadow-xl shadow-slate-200/50 calendar-card relative sticky top-0 z-10"
             header={
               <ArrowNavigation
                 onPrev={() => setViewDate((d) => startOfYear(subYears(d, 1)))}
@@ -1019,34 +1149,36 @@ export default function CalendarView({
               </ArrowNavigation>
             }
             body={
-              <div className="month-grid">
-                {MONTH_NAMES.map((name, i) => {
-                  const isCurrentMonth =
-                    viewDate.getFullYear() === CURRENT_YEAR &&
-                    i === CURRENT_MONTH;
-                  const monthStart = startOfMonth(new Date(viewDate.getFullYear(), i, 1));
-                  const isBeforeBudgetStart = monthStart < minDate;
-                  return (
-                    <button
-                      key={name}
-                      type="button"
-                      disabled={isBeforeBudgetStart}
-                      onClick={() => {
-                        setViewDate(monthStart);
-                        setViewMode("month");
-                      }}
-                      className={`month-grid__tile ${isCurrentMonth ? "month-grid__tile--current" : ""} ${isBeforeBudgetStart ? "opacity-50 cursor-not-allowed" : ""}`}
-                    >
-                      {name}
-                    </button>
-                  );
-                })}
+              <div className="h-[50vh] min-h-0 overflow-y-auto overflow-x-hidden sm:h-auto sm:min-h-0 sm:overflow-visible">
+                <div className="month-grid">
+                  {MONTH_NAMES.map((name, i) => {
+                    const isCurrentMonth =
+                      viewDate.getFullYear() === CURRENT_YEAR &&
+                      i === CURRENT_MONTH;
+                    const monthStart = startOfMonth(new Date(viewDate.getFullYear(), i, 1));
+                    const isBeforeBudgetStart = monthStart < minDate;
+                    return (
+                      <button
+                        key={name}
+                        type="button"
+                        disabled={isBeforeBudgetStart}
+                        onClick={() => {
+                          setViewDate(monthStart);
+                          setViewMode("month");
+                        }}
+                        className={`month-grid__tile ${isCurrentMonth ? "month-grid__tile--current" : ""} ${isBeforeBudgetStart ? "opacity-50 cursor-not-allowed" : ""}`}
+                      >
+                        {name}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             }
           />
         ) : (
           <ModularCalendarCard
-            className="rounded-xl sm:rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/80 p-4 sm:p-6 md:p-8 lg:p-10 shadow-xl shadow-slate-200/50 calendar-card relative"
+            className="rounded-xl sm:rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/80 p-4 sm:p-6 md:p-8 lg:p-10 shadow-xl shadow-slate-200/50 calendar-card relative sticky top-0 z-10"
             header={
               <ArrowNavigation
                 onPrev={() => setViewDate((d) => startOfYear(subYears(d, 1)))}
@@ -1059,26 +1191,28 @@ export default function CalendarView({
               </ArrowNavigation>
             }
             body={
-              <div className="year-grid">
-                {Array.from({ length: YEARS_PER_PAGE }, (_, i) => {
-                  const year = viewDate.getFullYear() + i;
-                  const isCurrentYear = year === CURRENT_YEAR;
-                  const isBeforeBudgetStart = year < budgetStartYear;
-                  return (
-                    <button
-                      key={year}
-                      type="button"
-                      disabled={isBeforeBudgetStart}
-                      onClick={() => {
-                        setViewDate(startOfYear(new Date(year, 0, 1)));
-                        setViewMode("month-picker");
-                      }}
-                      className={`year-grid__tile ${isCurrentYear ? "year-grid__tile--current" : ""} ${isBeforeBudgetStart ? "opacity-50 cursor-not-allowed" : ""}`}
-                    >
-                      {year}
-                    </button>
-                  );
-                })}
+              <div className="h-[50vh] min-h-0 overflow-y-auto overflow-x-hidden sm:h-auto sm:min-h-0 sm:overflow-visible">
+                <div className="year-grid">
+                  {Array.from({ length: YEARS_PER_PAGE }, (_, i) => {
+                    const year = viewDate.getFullYear() + i;
+                    const isCurrentYear = year === CURRENT_YEAR;
+                    const isBeforeBudgetStart = year < budgetStartYear;
+                    return (
+                      <button
+                        key={year}
+                        type="button"
+                        disabled={isBeforeBudgetStart}
+                        onClick={() => {
+                          setViewDate(startOfYear(new Date(year, 0, 1)));
+                          setViewMode("month-picker");
+                        }}
+                        className={`year-grid__tile ${isCurrentYear ? "year-grid__tile--current" : ""} ${isBeforeBudgetStart ? "opacity-50 cursor-not-allowed" : ""}`}
+                      >
+                        {year}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             }
           />

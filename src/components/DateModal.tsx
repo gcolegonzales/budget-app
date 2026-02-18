@@ -299,8 +299,9 @@ export default function DateModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 10 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-lg max-h-[85dvh] sm:max-h-[85vh] -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white shadow-xl border border-slate-200 flex flex-col overflow-hidden mx-4 my-4 sm:mx-0 sm:my-0"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
           >
+            <div className="w-full max-w-lg max-h-[85dvh] sm:max-h-[85vh] rounded-2xl bg-white shadow-xl border border-slate-200 flex flex-col overflow-hidden">
             <div className="p-4 sm:p-6 border-b border-slate-100 flex-shrink-0">
               <Dialog.Title className="text-lg font-semibold text-slate-800">
                 {format(date, 'EEEE, MMMM d, yyyy')}
@@ -808,6 +809,7 @@ export default function DateModal({
                 </button>
               </Dialog.Close>
             </div>
+            </div>
           </motion.div>
         </Dialog.Content>
       </Dialog.Portal>
@@ -835,8 +837,9 @@ export default function DateModal({
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
-            className="fixed left-1/2 top-1/2 z-[60] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white shadow-xl border border-slate-200 p-6"
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4"
           >
+            <div className="w-full max-w-md rounded-2xl bg-white shadow-xl border border-slate-200 p-6 max-h-[90dvh] overflow-y-auto">
             {editingExpense && (
               <form onSubmit={handleSaveEdit} className="space-y-4">
                 <Dialog.Title className="text-lg font-semibold text-slate-800">Edit Expense</Dialog.Title>
@@ -1023,6 +1026,7 @@ export default function DateModal({
                 </div>
               </form>
             )}
+            </div>
           </motion.div>
         </Dialog.Content>
       </Dialog.Portal>
